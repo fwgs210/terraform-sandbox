@@ -1,0 +1,10 @@
+node_modules
+coverage
+dist
+build
+.serverless
+.terraform
+*.tfstate
+*.tfvars
+*-error.log
+.env
