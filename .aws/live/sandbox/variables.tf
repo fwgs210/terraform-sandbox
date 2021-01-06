@@ -8,6 +8,11 @@ variable "service_name" {
   default     = "tracy-su-aws"
 }
 
+variable "stage" {
+  description = "Stage for this service"
+  default     = "sandbox"
+}
+
 variable  "AWS_ACCESS_KEY_ID" {
   type = "string"
 }

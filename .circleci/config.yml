@@ -1,0 +1,46 @@
+version: 2
+
+jobs:
+  sandbox-plan-apply:
+    working_directory: /tmp/project/.aws/live/sandbox
+    docker:
+      - image: hashicorp/terraform:light
+    steps:
+      - checkout
+      - run:
+          name: terraform init & plan
+          command: |
+            terraform init -input=false -backend-config="token=${TFE_TOKEN}"
+            terraform plan -out tfapply
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  sandbox-apply:
+    docker:
+      - image: hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform
+          command: |
+            terraform apply -auto-approve tfapply
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+workflows:
+  version: 2
+  plan_approve_apply:
+    jobs:
+      - sandbox-plan-apply
+      - hold-apply:
+          type: approval
+          requires:
+            - sandbox-plan-apply
+      - sandbox-apply:
+          requires:
+            - hold-apply
