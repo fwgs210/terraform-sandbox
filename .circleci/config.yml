@@ -2,7 +2,7 @@ version: 2
 
 jobs:
   sandbox-plan-apply:
-    working_directory: /tmp/project/.aws/live/sandbox
+    working_directory: /tmp/project
     docker:
       - image: hashicorp/terraform:light
     steps:
@@ -10,8 +10,8 @@ jobs:
       - run:
           name: terraform init & plan
           command: |
-            terraform init -input=false -backend-config="token=${TFE_TOKEN}"
-            terraform plan -out tfapply
+            terraform init -input=false -backend-config="token=${TFE_TOKEN}" .aws/live/sandbox
+            terraform plan -out tfapply .aws/live/sandbox
       - persist_to_workspace:
           root: .
           paths:
@@ -26,7 +26,7 @@ jobs:
       - run:
           name: terraform
           command: |
-            terraform apply -auto-approve tfapply
+            terraform apply -auto-approve tfapply .aws/live/sandbox
       - persist_to_workspace:
           root: .
           paths:
@@ -34,7 +34,7 @@ jobs:
 
 workflows:
   version: 2
-  plan_approve_apply:
+  sandbox_plan_approve_apply:
     jobs:
       - sandbox-plan-apply
       - hold-apply:
