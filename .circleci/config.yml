@@ -40,7 +40,7 @@ workflows:
   sandbox_plan_approve_apply:
     jobs:
       - sandbox-plan-apply:
-          profile: $TFE_TOKEN
+          token: $TFE_TOKEN
       - hold-apply:
           type: approval
           requires:
