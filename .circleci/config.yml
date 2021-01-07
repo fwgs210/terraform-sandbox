@@ -1,5 +1,12 @@
 version: 2
 
+aliases:
+  - &setup-aws-cli
+    run: |
+      sudo apt-get update && sudo apt-get install -qq -y python-pip libpython-dev && \
+        curl -O https://bootstrap.pypa.io/get-pip.py && sudo python get-pip.py && \
+        sudo pip install -q awscli --upgrade
+
 jobs:
   sandbox-plan-apply:
     working_directory: /tmp/project
@@ -38,6 +45,7 @@ jobs:
 
     steps:
       - checkout
+      - *setup-aws-cli
 
       # Download and cache dependencies
       - restore_cache:
@@ -49,9 +57,8 @@ jobs:
       - run:
           name: Install Serverless CLI, AWS CLI and dependencies
           command: |
-            apt-get update && apt-get install -y awscli
             sudo npm i -g serverless
-            npm install
+            yarn install
       - run:
           name: Serverless Configuration
           command: |
