@@ -5,15 +5,12 @@ jobs:
     working_directory: /tmp/project
     docker:
       - image: hashicorp/terraform:light
-    parameters:
-      token:
-        type: string
     steps:
       - checkout
       - run:
           name: terraform init & plan
           command: |
-            terraform init -input=false -backend-config="token=<< parameters.token >>" .aws/live/sandbox
+            terraform init -input=false -backend-config="token=${TFE_TOKEN}" .aws/live/sandbox
             terraform plan .aws/live/sandbox
       - persist_to_workspace:
           root: .
@@ -39,8 +36,7 @@ workflows:
   version: 2
   sandbox_plan_approve_apply:
     jobs:
-      - sandbox-plan-apply:
-          token: $TFE_TOKEN
+      - sandbox-plan-apply
       - hold-apply:
           type: approval
           requires:
