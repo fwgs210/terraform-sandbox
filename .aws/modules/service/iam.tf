@@ -21,7 +21,7 @@ resource "aws_iam_role" "hello" {
 data "aws_iam_policy_document" "hello" {
   statement {
     resources = [
-      "arn:${local.partition}:logs:${local.region}:${local.account_id}:log-group:/aws/lambda/${var.service_name}-${var.stage}-hello-*:*",
+      "arn:${local.partition}:logs:${local.region}:${local.account_id}:log-group:/aws/lambda/${var.service_name}-${var.stage}-hello:*",
     ]
     actions = [
       "logs:CreateLogStream",
