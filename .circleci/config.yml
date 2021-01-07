@@ -57,14 +57,16 @@ jobs:
       - run:
           name: Install Serverless CLI, AWS CLI and dependencies
           command: |
-            sudo npm i -g serverless
             yarn install
+
       - run:
           name: Serverless Configuration
           command: |
             aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID" --profile default
             aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" --profile default
-            aws configure set role_arn arn:aws:iam::838374399476:role/admin --profile default
+            aws configure set role_arn arn:aws:iam::838374399476:role/admin --profile zsu.sandbox
+            aws configure set source_profile default --profile zsu.sandbox
+
       - save_cache:
           paths:
             - node_modules
@@ -72,7 +74,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: sls deploy -s sandbox
+          command: AWS_PROFILE=zsu.sandbox serverless deploy -s sandbox
 
 workflows:
   version: 2
