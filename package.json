@@ -1,0 +1,15 @@
+{
+  "name": "terraform-sandbox",
+  "version": "1.0.0",
+  "main": "handler.js",
+  "repository": "https://github.com/fwgs210/terraform-sandbox.git",
+  "author": "<tracysu1990@hotmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless": "^1.65.0",
+    "serverless-jetpack": "^0.10.6",
+    "serverless-plugin-log-subscription": "^1.2.0",
+    "serverless-plugin-tracing": "^2.0.0",
+    "serverless-pseudo-parameters": "^2.5.0"
+  }
+}

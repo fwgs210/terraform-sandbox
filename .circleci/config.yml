@@ -32,6 +32,40 @@ jobs:
           paths:
             - .
 
+  deploy-sanbbox:
+    docker:
+      - image: circleci/node:lts
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run:
+          name: Install Serverless CLI and dependencies
+          command: |
+            sudo npm i -g serverless
+            npm install
+      - run:
+          name: Serverless Configuration
+          command: |
+            aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID" --profile default
+            aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" --profile default
+            aws configure set role_arn arn:aws:iam::838374399476:role/admin --profile default
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-
+
+      - run:
+          name: Deploy application
+          command: sls deploy -s sandbox
+
 workflows:
   version: 2
   sandbox_plan_approve_apply:
@@ -44,3 +78,6 @@ workflows:
       - sandbox-apply:
           requires:
             - hold-apply
+      - deploy-sanbbox:
+          requires:
+            - sandbox-apply
