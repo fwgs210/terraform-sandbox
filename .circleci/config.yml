@@ -47,8 +47,9 @@ jobs:
           - v1-dependencies-
 
       - run:
-          name: Install Serverless CLI and dependencies
+          name: Install Serverless CLI, AWS CLI and dependencies
           command: |
+            apt-get update && apt-get install -y awscli
             sudo npm i -g serverless
             npm install
       - run:
