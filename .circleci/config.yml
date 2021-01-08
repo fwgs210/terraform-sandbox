@@ -60,10 +60,9 @@ jobs:
       - run:
           name: Serverless Configuration
           command: |
-            aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID" --profile zsu.sandbox
-            aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" --profile zsu.sandbox
-            aws configure set role_arn arn:aws:iam::838374399476:role/admin --profile zsu.sandbox
-            aws configure set region "$AWS_REGION" --profile zsu.sandbox
+            aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID" --profile default
+            aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" --profile default
+            aws configure set region "$AWS_REGION" --profile default
 
       - save_cache:
           paths:
@@ -72,7 +71,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: AWS_PROFILE=zsu.sandbox serverless deploy -s sandbox
+          command: .circleci/scripts/deploy.sh serverless deploy -s sandbox
 
 workflows:
   version: 2
