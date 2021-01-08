@@ -11,10 +11,10 @@ esac; shift; done
 temp_role=$(aws sts assume-role --role-arn "$PROFILE" --role-session-name my-sls-session)
 
 # Export the keys for AWS CLI access
-AWS_ACCESS_KEY_ID="$(echo "$temp_role" | jq .Credentials.AccessKeyId)"
-AWS_SECRET_ACCESS_KEY="$(echo "$temp_role" | jq .Credentials.SecretAccessKey)"
-AWS_SESSION_TOKEN="$(echo "$temp_role" | jq .Credentials.SessionToken)"
+export AWS_ACCESS_KEY_ID="$(echo "$temp_role" | jq .Credentials.AccessKeyId)"
+export AWS_SECRET_ACCESS_KEY="$(echo "$temp_role" | jq .Credentials.SecretAccessKey)"
+export AWS_SESSION_TOKEN="$(echo "$temp_role" | jq .Credentials.SessionToken)"
 
-export AWS_ACCESS_KEY_ID
-export AWS_SECRET_ACCESS_KEY
-export AWS_SESSION_TOKEN
+# Serverless deploy 
+echo "Deploy serverless now"
+serverless deploy -s sandbox
