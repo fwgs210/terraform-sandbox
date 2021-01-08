@@ -8,8 +8,7 @@ while [[ "$#" > 0 ]]; do case $1 in
 esac; shift; done
 
 # Create temporary credentials for AWS
-session_date=$(date '+%Y-%m-%d-%H%M%S')
-temp_role=$(aws sts assume-role --role-arn "$PROFILE" --role-session-name "ci-$session_date")
+temp_role=$(aws sts assume-role --role-arn "$PROFILE" --role-session-name my-sls-session)
 
 # Export the keys for AWS CLI access
 AWS_ACCESS_KEY_ID="$(echo "$temp_role" | jq .Credentials.AccessKeyId)"
