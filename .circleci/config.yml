@@ -70,6 +70,10 @@ jobs:
           key: v1-dependencies-
 
       - run:
+          name: chmod permissions
+          command: chmod +x .circleci/scripts/deploy.sh
+
+      - run:
           name: Deploy application
           command: .circleci/scripts/deploy.sh serverless deploy -s sandbox
 
