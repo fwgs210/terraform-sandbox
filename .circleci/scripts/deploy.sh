@@ -1,11 +1,21 @@
 #!/bin/bash
 
-CREDS=$(aws sts assume-role --role-arn \
-  arn:aws:iam::838374399476:role/admin \
-  --role-session-name my-sls-session --out json)
-export AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r '.Credentials.AccessKeyId')
-export AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r '.Credentials.SecretAccessKey')
-export AWS_SESSION_TOKEN=$(echo $CREDS | jq -r '.Credentials.SessionToken')
+# arguments
+while [[ "$#" > 0 ]]; do case $1 in
+  -p|--profile) PROFILE="$2"; shift;;
+  -r|--region) AWS_REGION="$2"; shift;;
+  *) echo -e "\033[31m Unknown option \033[0m"; usage; exit 1;;
+esac; shift; done
 
-echo $@
-$@
+# Create temporary credentials for AWS
+session_date=$(date '+%Y-%m-%d-%H%M%S')
+temp_role=$(aws sts assume-role --role-arn "$PROFILE" --role-session-name "ci-$session_date")
+
+# Export the keys for AWS CLI access
+AWS_ACCESS_KEY_ID="$(echo "$temp_role" | jq .Credentials.AccessKeyId)"
+AWS_SECRET_ACCESS_KEY="$(echo "$temp_role" | jq .Credentials.SecretAccessKey)"
+AWS_SESSION_TOKEN="$(echo "$temp_role" | jq .Credentials.SessionToken)"
+
+export AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY
+export AWS_SESSION_TOKEN

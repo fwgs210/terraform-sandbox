@@ -75,7 +75,9 @@ jobs:
 
       - run:
           name: Deploy application
-          command: .circleci/scripts/deploy.sh serverless deploy -s sandbox
+          command: |
+            .circleci/scripts/deploy.sh --profile arn:aws:iam::838374399476:role/admin
+            serverless deploy -s sandbox
 
 workflows:
   version: 2
