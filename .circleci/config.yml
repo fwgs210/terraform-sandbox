@@ -5,41 +5,51 @@ orbs:
   serverless: circleci/serverless-framework@1.0.1
 
 jobs:
-  sandbox-plan-apply:
+  plan-apply:
     working_directory: /tmp/project
     docker:
       - image: hashicorp/terraform:light
+    parameters:
+      target_folder:
+        type: string
     steps:
       - checkout
       - run:
           name: terraform init & plan
           command: |
-            terraform init -input=false -backend-config="token=${TFE_TOKEN}" .aws/live/sandbox
-            terraform plan .aws/live/sandbox
+            terraform init -input=false -backend-config="token=${TFE_TOKEN}" << parameters.target_folder >>
+            terraform plan << parameters.target_folder >>
       - persist_to_workspace:
           root: .
           paths:
             - .
 
-  sandbox-apply:
+  apply:
     docker:
       - image: hashicorp/terraform:light
+    parameters:
+      target_folder:
+        type: string
     steps:
       - attach_workspace:
           at: .
       - run:
           name: terraform
           command: |
-            terraform apply -auto-approve .aws/live/sandbox
+            terraform apply -auto-approve << parameters.target_folder >>
       - persist_to_workspace:
           root: .
           paths:
             - .
 
-  deploy-sanbbox:
+  deploy:
     docker:
       - image: circleci/node:lts
-
+    parameters:
+      profile:
+        type: string
+      stage:
+        type: string
     steps:
       - checkout
       - aws-cli/setup
@@ -76,21 +86,25 @@ jobs:
       - run:
           name: Deploy application
           command: |
-            source .circleci/scripts/deploy.sh --profile arn:aws:iam::838374399476:role/admin
-            serverless deploy -s sandbox
+            source .circleci/scripts/deploy.sh --profile << parameters.profile >>
+            serverless deploy -s << parameters.stage >>
 
 workflows:
   version: 2
-  sandbox_plan_approve_apply:
+  deploy_sandbox:
     jobs:
-      - sandbox-plan-apply
+      - plan-apply:
+          target_folder: .aws/live/sandbox
       - hold-apply:
           type: approval
           requires:
-            - sandbox-plan-apply
-      - sandbox-apply:
+            - plan-apply
+      - apply:
+          target_folder: .aws/live/sandbox
           requires:
             - hold-apply
-      - deploy-sanbbox:
+      - deploy:
+          profile: arn:aws:iam::838374399476:role/admin
+          stage: sandbox
           requires:
-            - sandbox-apply
+            - apply
